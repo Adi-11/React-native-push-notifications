@@ -5,7 +5,7 @@ PushNotification.configure({
   },
 
   onNotification: function (notification) {
-    console.log({notification: notification});
+    console.log({notification_local: notification});
   },
 
   // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
@@ -67,4 +67,36 @@ export const ScheduledLocalNotificationInit = () => {
     actions: ['Yes', 'No'],
     date: new Date(Date.now() + 3 * 1000),
   });
+};
+
+export const SendRemoteNotifcation = async (data: any): Promise<void> => {
+  const FIREBASE_KEY =
+    'AAAAQm_DDuI:APA91bEKlPbM3qa_QrVO7_s-QbW66ObXp7_amj0XN3caEirR2yHfifml2CpQEruzVB9OwzYAJ6GSr-Gb-Jff0r_nFUzgxMLxbiUTaMN8dLBDxYJ5CWuE7XBR3rRFrs00FVbdJGD9E82K';
+  const message = {
+    registration_ids: [data.token],
+    data: data.data,
+    notification: {
+      title: data.title,
+      body: data.Body,
+      vibrate: 1,
+      sound: 1,
+      priority: 'high',
+      show_in_foreground: true,
+      content_available: true,
+      userInteraction: true,
+    },
+  };
+  let headers = new Headers({
+    'Content-Type': 'application/json',
+    Authorization: 'Key=' + FIREBASE_KEY,
+  });
+
+  fetch('https://fcm.googleapis.com/fcm/send', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(message),
+  })
+    .then(res => res.json())
+    .then(res => console.log({res: res}))
+    .catch(err => console.log({err: err}));
 };

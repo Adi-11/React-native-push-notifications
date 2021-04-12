@@ -4,6 +4,7 @@ import PushNotification from 'react-native-push-notification';
 import {
   LocalNotificationInit,
   ScheduledLocalNotificationInit,
+  SendRemoteNotifcation,
 } from '../helpers/PushNotificationConfiguration';
 import {TouchableComponent} from '../helpers/Touchables';
 
@@ -30,6 +31,20 @@ export default class NotificationScreen extends Component<IProps, IState> {
   handleScheduleNotification = () => {
     ScheduledLocalNotificationInit();
   };
+  handleRemoteNotifcation = async () => {
+    let notificationObj = {
+      data: {
+        id: 1,
+        type: 'redirect',
+        name: 'Tester 2',
+      },
+      title: 'Test Notification',
+      Body: 'Check this Test Notification..!!',
+      token:
+        'cVspFWMKT3m_Lxey65rG6g:APA91bExUX7FSpS1UD7UoUBMyv-C3T3QpzqdoATgy9B2cOJG94Du3QPTw9fjhMo_yCvF6N9jbl0ZUQY4Af_1WvwY2uqFm5V04zszlhnZXbYXpb1aF-nrY2zTrXZPKfn_5YwQAMm5jZyo',
+    };
+    const res = await SendRemoteNotifcation(notificationObj);
+  };
 
   render() {
     return (
@@ -55,7 +70,7 @@ export default class NotificationScreen extends Component<IProps, IState> {
             <View style={styles.txt}>
               <Text
                 style={{fontSize: 20, height: '100%'}}
-                onPress={() => console.log('ok')}>
+                onPress={this.handleRemoteNotifcation}>
                 Remote Notification
               </Text>
             </View>
