@@ -1,5 +1,6 @@
+import {useNavigation} from '@react-navigation/native';
 import React, {Component} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Button, StyleSheet, Text, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import {
   LocalNotificationInit,
@@ -8,7 +9,9 @@ import {
 } from '../helpers/PushNotificationConfiguration';
 import {TouchableComponent} from '../helpers/Touchables';
 
-interface IProps {}
+interface IProps {
+  navigation: any;
+}
 
 interface IState {}
 
@@ -41,7 +44,7 @@ export default class NotificationScreen extends Component<IProps, IState> {
       title: 'Test Notification',
       Body: 'Check this Test Notification..!!',
       token:
-        'cVspFWMKT3m_Lxey65rG6g:APA91bExUX7FSpS1UD7UoUBMyv-C3T3QpzqdoATgy9B2cOJG94Du3QPTw9fjhMo_yCvF6N9jbl0ZUQY4Af_1WvwY2uqFm5V04zszlhnZXbYXpb1aF-nrY2zTrXZPKfn_5YwQAMm5jZyo',
+        'dprBSXqwQ3uNjxjUqUev4F:APA91bGaTCY2c4PQ44fzylpouNo76pS62-oJkVczFf7q2lH_gkRb96LUg77SV3eVkPAwhZx3gF_yDvzevf3IGIIm1VyMvCtjsfuxNdFCpLwcz72mcBENX15tzr5JyQmpjogLlpHEXjY4',
     };
     const res = await SendRemoteNotifcation(notificationObj);
   };
@@ -76,6 +79,10 @@ export default class NotificationScreen extends Component<IProps, IState> {
             </View>
           </TouchableComponent>
         </View>
+        <Button
+          title="Go to Profile"
+          onPress={() => this.props.navigation.navigate('NotificationList')}
+        />
       </View>
     );
   }

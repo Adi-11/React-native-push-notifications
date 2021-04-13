@@ -6,6 +6,12 @@ PushNotification.configure({
 
   onNotification: function (notification) {
     console.log({notification_local: notification});
+    // console.log({data: notification.data});
+    /**
+     *! State Management
+     * TODO: Things are needed to be handled here!!
+     *
+     */
   },
 
   // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
