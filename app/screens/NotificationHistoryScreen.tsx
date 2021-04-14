@@ -31,7 +31,6 @@ const ANIMATION = IMAGE_SIZE + SPACING * 3;
 const cards: NotificationType[] = [];
 
 export const NotificationList: React.FC<any> = () => {
-  const scrollY = useRef(new Animated.Value(0)).current;
   const notificationsHistory = useNotificationHistoryHook();
   useEffect(() => {
     if (notificationsHistory && notificationsHistory[0]) {
@@ -44,26 +43,11 @@ export const NotificationList: React.FC<any> = () => {
       <Animated.FlatList
         data={cards}
         keyExtractor={item => String(item.key)}
-        onScroll={Animated.event(
-          [{nativeEvent: {contentOffset: {y: scrollY}}}],
-          {useNativeDriver: true},
-        )}
         contentContainerStyle={{
           padding: 20,
           backgroundColor: 'rgba(225,225,225, 0.9)',
         }}
         renderItem={({item, index}) => {
-          const inputRange = [
-            -1,
-            0,
-            ANIMATION * index,
-            ANIMATION * (index + 1),
-          ];
-
-          const scale = scrollY.interpolate({
-            inputRange,
-            outputRange: [1, 1, 1, 0],
-          });
           return (
             <View
               style={{
@@ -74,7 +58,6 @@ export const NotificationList: React.FC<any> = () => {
                 paddingRight: SPACING * 3,
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
                 marginBottom: SPACING,
-                // transform: [{scale}],
               }}>
               <Image
                 style={styles.card}
@@ -87,7 +70,11 @@ export const NotificationList: React.FC<any> = () => {
                 <Text style={{fontSize: 22, fontWeight: '600'}}>
                   {item.title}
                 </Text>
-                <Text style={{fontSize: 16}}>{item.description}</Text>
+                <Text
+                  style={{fontSize: 16, textAlignVertical: 'top'}}
+                  numberOfLines={1}>
+                  {item.description}
+                </Text>
                 <View style={styles.local}>
                   <TouchableOpacity
                     onPress={() => console.log('You got it!!!')}>
