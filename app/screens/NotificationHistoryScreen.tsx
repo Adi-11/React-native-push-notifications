@@ -1,138 +1,127 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
-  Animated,
-  Dimensions,
-  StyleSheet,
-  View,
   FlatList,
+  Image,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Animated,
 } from 'react-native';
-import Card, {
-  Cards,
-  CARD_HEIGHT as DEFAULT_CARD_HEIGHT,
-  CARD_WIDTH,
-} from '../helpers/CardAssects';
-// import WalletCard from './WalletCard';
+import {
+  NotificationType,
+  useNotificationHistoryHook,
+} from '../helpers/Notification.store';
 
-export const MARGIN = 16;
-export const CARD_HEIGHT = DEFAULT_CARD_HEIGHT + MARGIN * 2;
-const {height: wHeight} = Dimensions.get('window');
-const height = wHeight - 64;
+const IMAGE_SIZE = 70;
+const SPACING = 20;
+const ANIMATION = IMAGE_SIZE + SPACING * 3;
 
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+// const cards = [...Array(20).keys()].map((item: any, idx: number) => {
+//   return {
+//     key: idx,
+//     image: "require('../assets/card5.jpg')",
+//     title: 'Notifcation 1',
+//     description: 'Description Of the notification Yawlit!!!',
+//     buttonTitle: 'Get it now',
+//   };
+// });
 
-const cards = [
-  {
-    type: Cards.Card1,
-  },
-  {
-    type: Cards.Card2,
-  },
-  {
-    type: Cards.Card3,
-  },
-  {
-    type: Cards.Card4,
-  },
-  {
-    type: Cards.Card5,
-  },
-  {
-    type: Cards.Card6,
-  },
-  {
-    type: Cards.Card7,
-  },
-  {
-    type: Cards.Card8,
-  },
-  {
-    type: Cards.Card9,
-  },
-  {
-    type: Cards.Card10,
-  },
-  {
-    type: Cards.Card11,
-  },
-  {
-    type: Cards.Card12,
-  },
-];
+const cards: NotificationType[] = [];
 
-export const Wallet = () => {
-  const y = new Animated.Value(0);
-  const onScroll = Animated.event([{nativeEvent: {contentOffset: {y}}}], {
-    useNativeDriver: true,
-  });
+export const NotificationList: React.FC<any> = () => {
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const notificationsHistory = useNotificationHistoryHook();
+  useEffect(() => {
+    if (notificationsHistory && notificationsHistory[0]) {
+      console.log({notificationsHistory: notificationsHistory});
+      cards.push(notificationsHistory[0]);
+    }
+  }, [notificationsHistory]);
   return (
-    <AnimatedFlatList
-      scrollEventThrottle={16}
-      bounces={false}
-      contentContainerStyle={{
-        padding: 20,
-        paddingTop: StatusBar.currentHeight || 42,
-        backgroundColor: 'rgba(225,225,225, 0.9)',
-      }}
-      data={cards}
-      renderItem={({item: {type}, index}) => (
-        <WalletCard {...{index, y, type}} key={index} />
-      )}
-      keyExtractor={item => (item as any).index}
-      {...{onScroll}}
-    />
-  );
-};
+    <View style={{flex: 1}}>
+      <Animated.FlatList
+        data={cards}
+        keyExtractor={item => String(item.key)}
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {y: scrollY}}}],
+          {useNativeDriver: true},
+        )}
+        contentContainerStyle={{
+          padding: 20,
+          backgroundColor: 'rgba(225,225,225, 0.9)',
+        }}
+        renderItem={({item, index}) => {
+          const inputRange = [
+            -1,
+            0,
+            ANIMATION * index,
+            ANIMATION * (index + 1),
+          ];
 
-interface WalletCardProps {
-  y: Animated.Value;
-  index: number;
-  type: Cards;
-}
-
-const WalletCard = ({type, y, index}: WalletCardProps) => {
-  const position = Animated.subtract(index * CARD_HEIGHT, y);
-  const isDisappearing = -CARD_HEIGHT;
-  const isTop = 0;
-  const isBottom = height - CARD_HEIGHT;
-  const isAppearing = height;
-  const translateY = Animated.add(
-    Animated.add(
-      y,
-      y.interpolate({
-        inputRange: [0, 0.00001 + index * CARD_HEIGHT],
-        outputRange: [0, -index * CARD_HEIGHT],
-        extrapolateRight: 'clamp',
-      }),
-    ),
-    position.interpolate({
-      inputRange: [isBottom, isAppearing],
-      outputRange: [0, -CARD_HEIGHT / 4],
-      extrapolate: 'clamp',
-    }),
-  );
-  const scale = position.interpolate({
-    inputRange: [isDisappearing, isTop, isBottom, isAppearing],
-    outputRange: [0.5, 1, 1, 0.5],
-    extrapolate: 'clamp',
-  });
-  const opacity = position.interpolate({
-    inputRange: [isDisappearing, isTop, isBottom, isAppearing],
-    outputRange: [0.5, 1, 1, 0.5],
-  });
-  return (
-    <Animated.View
-      style={[styles.card, {opacity, transform: [{translateY}, {scale}]}]}
-      key={index}>
-      <Card {...{type}} key={index} />
-    </Animated.View>
+          const scale = scrollY.interpolate({
+            inputRange,
+            outputRange: [1, 1, 1, 0],
+          });
+          return (
+            <View
+              style={{
+                flexDirection: 'row',
+                padding: SPACING,
+                borderRadius: 20,
+                width: '100%',
+                paddingRight: SPACING * 3,
+                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                marginBottom: SPACING,
+                // transform: [{scale}],
+              }}>
+              <Image
+                style={styles.card}
+                source={{
+                  uri:
+                    'https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                }}
+              />
+              <View>
+                <Text style={{fontSize: 22, fontWeight: '600'}}>
+                  {item.title}
+                </Text>
+                <Text style={{fontSize: 16}}>{item.description}</Text>
+                <View style={styles.local}>
+                  <TouchableOpacity
+                    onPress={() => console.log('You got it!!!')}>
+                    <View style={styles.txt}>
+                      <Text style={{fontSize: 16}}>{item.buttonText}</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          );
+        }}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: MARGIN,
-    alignSelf: 'center',
-    width: '100%',
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE,
+    borderRadius: 50,
+    marginRight: SPACING / 2,
+  },
+
+  local: {
+    width: 100,
+    height: 35,
+    backgroundColor: '#fc5c65',
+    marginBottom: 10,
+    borderRadius: 10,
+    alignSelf: 'flex-end',
+  },
+  txt: {
+    margin: 5,
   },
 });

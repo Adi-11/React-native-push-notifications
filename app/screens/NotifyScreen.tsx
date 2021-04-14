@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import React, {Component} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
@@ -35,6 +36,7 @@ export default class NotificationScreen extends Component<IProps, IState> {
     ScheduledLocalNotificationInit();
   };
   handleRemoteNotifcation = async () => {
+    const token = await AsyncStorage.getItem('fcmToken');
     let notificationObj = {
       data: {
         id: 1,
@@ -43,8 +45,7 @@ export default class NotificationScreen extends Component<IProps, IState> {
       },
       title: 'Test Notification',
       Body: 'Check this Test Notification..!!',
-      token:
-        'dprBSXqwQ3uNjxjUqUev4F:APA91bGaTCY2c4PQ44fzylpouNo76pS62-oJkVczFf7q2lH_gkRb96LUg77SV3eVkPAwhZx3gF_yDvzevf3IGIIm1VyMvCtjsfuxNdFCpLwcz72mcBENX15tzr5JyQmpjogLlpHEXjY4',
+      token: token,
     };
     const res = await SendRemoteNotifcation(notificationObj);
   };
@@ -80,8 +81,8 @@ export default class NotificationScreen extends Component<IProps, IState> {
           </TouchableComponent>
         </View>
         <Button
-          title="Go to Profile"
-          onPress={() => this.props.navigation.navigate('NotificationList')}
+          title="Go to List"
+          onPress={() => this.props.navigation.navigate('List')}
         />
       </View>
     );

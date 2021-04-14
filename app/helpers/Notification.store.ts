@@ -1,85 +1,60 @@
-import React, {Component} from 'react';
+import {useEffect, useState} from 'react';
 import {BehaviorSubject, Subscription} from 'rxjs';
 
-export interface notifyObj {
-  data: {
-    [key: string]: string;
-  };
+export interface NotificationType {
   title: string;
-  body: string;
+  description: string;
+  imageUrl: string;
+  buttonText: string;
+  key: number;
 }
 
-// export class NotificationProvider {
-//   _notificationData: notifyObj = null;
+class NotificationHistory {
+  _notificationHistoryData: NotificationType[] = [];
 
-//   set notificationData(notify: notifyObj) {
-//     this._notificationData = notify;
-//   }
+  set notificationHistoryData(data: NotificationType[]) {
+    this._notificationHistoryData = data;
+  }
 
-//   get notificationData(): notifyObj {
-//     return this._notificationData;
-//   }
-// }
+  get notificationHistoryData() {
+    return this._notificationHistoryData;
+  }
+}
 
-// let notification = new NotificationProvider();
+let notificationHistory = new NotificationHistory();
 
-// const notificationSubject = new BehaviorSubject<notifyObj>(
-//   notification.notificationData,
-// );
+const notificationHistorySubject = new BehaviorSubject<NotificationType[]>(
+  notificationHistory.notificationHistoryData,
+);
 
-// export const notificationStore = {
-//   setNotificationData: (notify: notifyObj) => {
-//     console.log({notify: notify});
-//     let data = notify;
-//     notificationSubject.next(data);
-//   },
+export const NotificationStore = {
+  updateNotificationHistory: (value: any) => {
+    let tmp = value;
 
-//   getNotificationData: ()=> {
-//     notificationSubject.getValue();
-//   },
+    notificationHistorySubject.next({...value});
+  },
 
-//   getNotificationDataObservable: () => notificationSubject.asObservable(),
-// };
+  getNotificationHistory: () => {
+    notificationHistorySubject.getValue();
+  },
+  getnotificationHistoryObservable: () =>
+    notificationHistorySubject.asObservable(),
+};
 
-// export class useNotificationState extends Component<any, notifyObj, any> {
-//   subscription: Subscription;
-//   constructor(props: any) {
-//     super(props);
+// custome hook
+export const useNotificationHistoryHook = () => {
+  const [state, setState] = useState<NotificationType[] | void>(
+    NotificationStore.getNotificationHistory,
+  );
 
-//       this.state = {
-//         notification: notificationStore.getNotificationData();
-//       };
+  useEffect(() => {
+    const subscription: Subscription = NotificationStore.getnotificationHistoryObservable().subscribe(
+      s => {
+        setState(s);
+      },
+    );
+    return () => subscription.unsubscribe();
+  }, []);
 
-//   }
-
-//   // componentDidUpdate() {
-//   //   this.subscription = notificationStore
-//   //     .getNotificationDataObservable()
-//   //     .subscribe(s => {
-//   //       this.setState({
-//   //         body: s.body,
-//   //         data: s.data,
-//   //         title: s.title,
-//   //       });
-//   //     });
-//   // }
-
-//   componentWillUnmount() {
-//     this.subscription.unsubscribe();
-//   }
-
-//   render() {
-//     this.subscription = notificationStore
-//       .getNotificationDataObservable()
-//       .subscribe(s => {
-//         this.setState({
-//           body: s.body,
-//           data: s.data,
-//           title: s.title,
-//         });
-//       });
-//     return null;
-//   }
-// }
-
-// export const useNotificationhook = new useNotificationState({});
+  return state;
+};

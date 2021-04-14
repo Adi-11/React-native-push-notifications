@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {Alert, Button, View} from 'react-native';
 import NotificationScreen from './app/screens/NotifyScreen';
 import {checkPermisson} from './app/helpers/FireBaseConfiguration';
 import firebase from 'react-native-firebase';
@@ -7,30 +6,14 @@ import messaging from '@react-native-firebase/messaging';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer, useNavigation} from '@react-navigation/native';
 import {navigationRef, navigate} from './app/helpers/NavigationProvider';
-import PushNotification from 'react-native-push-notification';
-import {Wallet} from './app/screens/NotificationHistoryScreen';
+import {NotificationList} from './app/screens/NotificationHistoryScreen';
+import {Linking} from 'react-native';
+import {NotificationStore} from './app/helpers/Notification.store';
 const Stack = createStackNavigator();
-// TODO: Capture the notifcation
 interface AppState {
-  data: {
-    [key: string]: string;
-  };
-  title: string;
-  body: string;
   initialRouteName: string;
 }
-
-const notificationTypeArray = [
-  {
-    redirection: 'none',
-  },
-  {redirection: 'param'},
-  {URL: 'url'},
-  {
-    component: 'desigin is pending',
-  },
-];
-
+// done // // TODO : 0 => no-navigation; 1 => navigation in app; 2 => url redirect; 3 => User based notification({==, ==, ==, ==})
 class App extends Component<any, AppState, any> {
   notificationListener: any;
   notificationOpenedListener: any;
@@ -41,26 +24,23 @@ class App extends Component<any, AppState, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-      data: {},
-      title: '',
-      body: '',
-      initialRouteName: 'NotificationList',
+      initialRouteName: 'Notifications',
     };
   }
   async componentDidMount() {
     checkPermisson();
-    this.createNotificationListioner().then(() =>
-      console.log({mount_state: this.state}),
-    );
+    this.createNotificationListioner();
   }
 
   componentWillUnmount() {
     this.notificationListener;
     this.notificationOpenedListener;
-    // console.log({state: this.state});
   }
 
   createNotificationListioner = async () => {
+    /**
+     * @working
+     */
     const channel = new firebase.notifications.Android.Channel(
       'fcm_FirebaseNotifiction_default_channel',
       'Demo app name',
@@ -68,52 +48,52 @@ class App extends Component<any, AppState, any> {
     )
       .setDescription('Demo app description')
       .setSound('default');
-    firebase.notifications().android.createChannel(channel);
+    firebase
+      .notifications()
+      .android.createChannel(channel)
+      .then(() => console.log('channle created'));
 
+    /**
+     * @working
+     */
     this.notificationOpenedListener = messaging().onNotificationOpenedApp(
       remoteMessage => {
         console.log(
           'Notification caused app to open from background state:',
           remoteMessage.notification,
         );
-        const {data, from, notification} = remoteMessage;
-        console.log({data, from, notification});
-        var route = data.type;
-        navigate(route, {name: data.name});
-        // this.setState({initialRouteName: route});
+        const {data, notification} = remoteMessage;
+        // console.log({data, notification});
+        var route = data.routeName;
+        if (data.type === '1') {
+          console.log('No Navigation');
+        } else if (data.type === '2') {
+          // navigate(route, {text: 'test'});
+          /**
+           * @navigation_handling
+           * ?just needed to make the proper navigation screen
+           */
+        } else if (data.type == '3') {
+          Linking.openURL('https://github.com/Adi-11');
+        } else {
+          navigate(route);
+          NotificationStore.updateNotificationHistory([
+            {
+              title: notification.title,
+              description: notification.body,
+              imageUrl: data.imageUrl,
+              buttonText: data.btnText,
+              key: Math.ceil(Math.random() * 1000),
+            },
+          ]);
+        }
       },
     );
 
-    const notificationOpen = await firebase
-      .notifications()
-      .getInitialNotification();
-    if (notificationOpen) {
-      const {title, body} = notificationOpen.notification;
-      // console.log({getInitialNotification: notificationOpen});
-      Alert.alert(title, body);
-    }
-    // TODO : 0 => no-navigation; 1 => navigation in app; 2 => url redirect; 3 => User based notification({==, ==, ==, ==})
-    this.notificationListener = firebase
-      .notifications()
-      .onNotification(notification => {
-        console.log({notification_1: notification});
-        const {title, body} = notification;
-        const localNotification = new firebase.notifications.Notification()
-          .setSound('default')
-          .setNotificationId(notification.notificationId)
-          .setTitle(notification.title)
-          .setBody(notification.body)
-          .android.setChannelId('fcm_FirebaseNotifiction_default_channel')
-          .android.setSmallIcon('ic_launcher')
-          .android.setColor('#000')
-          .android.setPriority(firebase.notifications.Android.Priority.High);
-
-        firebase
-          .notifications()
-          .displayNotification(localNotification)
-          .catch(err => console.log({err: err}));
-      });
-
+    /**
+     * @Working
+     * ? ForeGround message listiner => event handing when the app is in foreground;
+     */
     this.messageListener = messaging().onMessage(message => {
       //process data message
       console.log('JSON.stringify:', JSON.stringify(message));
@@ -126,8 +106,9 @@ class App extends Component<any, AppState, any> {
           title: remoteMessage.notification.title,
           body: remoteMessage.notification.body,
         };
-        this.setState(notifyObj);
-        Alert.alert(notifyObj.data.type);
+        /**
+         * ? if events are needed to be handled when the app is in background then this method will be triggred
+         */
         console.log({function_state: this.state});
       },
     );
@@ -142,57 +123,14 @@ class App extends Component<any, AppState, any> {
             options={{headerTitleAlign: 'center'}}
           />
           <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{headerTitleAlign: 'center'}}
-          />
-          <Stack.Screen
-            name="Profile"
-            component={ProfileScreen}
-            options={{headerTitleAlign: 'center'}}
-          />
-          <Stack.Screen
-            name="NotificationList"
-            component={Wallet}
-            options={{headerTitleAlign: 'center', headerShown: false}}
+            name="List"
+            component={NotificationList}
+            options={{headerTitleAlign: 'center', headerShown: true}}
           />
         </Stack.Navigator>
       </NavigationContainer>
     );
   }
 }
-
-const HomeScreen = ({navigation}) => {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate('Profile')}
-      />
-    </View>
-  );
-};
-
-const ProfileScreen = ({navigation}) => {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <View style={{margin: 10}}>
-        <Button
-          title="Go to Notifications"
-          onPress={() => navigation.navigate('Notifications')}
-        />
-      </View>
-      <Button title="Go back" onPress={() => navigation.goBack()} />
-    </View>
-  );
-};
-
-const SettingsScreen = ({navigation}) => {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button title="Go back" onPress={() => navigation.goBack()} />
-    </View>
-  );
-};
 
 export default App;

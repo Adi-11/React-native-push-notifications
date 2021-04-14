@@ -12,15 +12,16 @@ export const checkPermisson = async () => {
 
 const getToken = async () => {
   let fcmToken = await AsyncStorage.getItem('fcmToken');
+  console.log('fcmToken:', fcmToken);
   if (!fcmToken) {
     fcmToken = await messaging().getToken();
     if (fcmToken) {
       // user has a device token
-      //   console.log('fcmToken:', fcmToken);
+      // console.log('fcmToken:', fcmToken);
       await AsyncStorage.setItem('fcmToken', fcmToken);
     }
   }
-  console.log({fcmToken: fcmToken});
+  // console.log({fcmToken: fcmToken});
 };
 
 // For IOS only
