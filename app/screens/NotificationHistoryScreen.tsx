@@ -8,11 +8,19 @@ import {
   TouchableOpacity,
   View,
   Animated,
+  ScrollView,
 } from 'react-native';
 import {
   NotificationType,
   useNotificationHistoryHook,
 } from '../helpers/Notification.store';
+import {color} from '../styles/col';
+import {
+  TypeOneNotificationComponent,
+  TypeThreeNotificationComponent,
+  TypeTwoNotificationComponent,
+  TypeZeroNotificationComponent,
+} from './NotificationListComponents';
 
 const IMAGE_SIZE = 70;
 const SPACING = 20;
@@ -39,55 +47,19 @@ export const NotificationList: React.FC<any> = () => {
     }
   }, [notificationsHistory]);
   return (
-    <View style={{flex: 1}}>
-      <Animated.FlatList
-        data={cards}
-        keyExtractor={item => String(item.key)}
+    <View>
+      <ScrollView
+        style={{paddingTop: 10}}
         contentContainerStyle={{
-          padding: 20,
-          backgroundColor: 'rgba(225,225,225, 0.9)',
-        }}
-        renderItem={({item, index}) => {
-          return (
-            <View
-              style={{
-                flexDirection: 'row',
-                padding: SPACING,
-                borderRadius: 20,
-                width: '100%',
-                paddingRight: SPACING * 3,
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                marginBottom: SPACING,
-              }}>
-              <Image
-                style={styles.card}
-                source={{
-                  uri:
-                    'https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                }}
-              />
-              <View>
-                <Text style={{fontSize: 22, fontWeight: '600'}}>
-                  {item.title}
-                </Text>
-                <Text
-                  style={{fontSize: 16, textAlignVertical: 'top'}}
-                  numberOfLines={1}>
-                  {item.description}
-                </Text>
-                <View style={styles.local}>
-                  <TouchableOpacity
-                    onPress={() => console.log('You got it!!!')}>
-                    <View style={styles.txt}>
-                      <Text style={{fontSize: 16}}>{item.buttonText}</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          );
-        }}
-      />
+          flexGrow: 1,
+          alignItems: 'center',
+          bottom: 20,
+        }}>
+        <TypeZeroNotificationComponent />
+        <TypeOneNotificationComponent />
+        <TypeTwoNotificationComponent />
+        <TypeThreeNotificationComponent />
+      </ScrollView>
     </View>
   );
 };

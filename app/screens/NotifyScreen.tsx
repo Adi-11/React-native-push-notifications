@@ -9,6 +9,7 @@ import {
   SendRemoteNotifcation,
 } from '../helpers/PushNotificationConfiguration';
 import {TouchableComponent} from '../helpers/Touchables';
+import {color} from '../styles/col';
 
 interface IProps {
   navigation: any;
@@ -64,7 +65,9 @@ export default class NotificationScreen extends Component<IProps, IState> {
         <View style={styles.remote}>
           <TouchableComponent onPress={this.handleScheduleNotification}>
             <View style={styles.txt}>
-              <Text style={{fontSize: 20}}>Schedule Notification</Text>
+              <Text style={{fontSize: 20, color: color.LIGHT_COLOR}}>
+                Schedule Notification
+              </Text>
             </View>
           </TouchableComponent>
         </View>
@@ -73,7 +76,7 @@ export default class NotificationScreen extends Component<IProps, IState> {
           <TouchableComponent>
             <View style={styles.txt}>
               <Text
-                style={{fontSize: 20, height: '100%'}}
+                style={{fontSize: 20, height: '100%', color: color.LIGHT_COLOR}}
                 onPress={this.handleRemoteNotifcation}>
                 Remote Notification
               </Text>
@@ -93,7 +96,7 @@ const styles = StyleSheet.create({
   local: {
     width: 270,
     height: 50,
-    backgroundColor: '#fc5c65',
+    backgroundColor: color.PRIMARY_COLOR,
     marginBottom: 10,
     borderRadius: 10,
   },
@@ -101,7 +104,7 @@ const styles = StyleSheet.create({
   remote: {
     width: 270,
     height: 50,
-    backgroundColor: '#4ecdc4',
+    backgroundColor: color.SECONDARY_COLOR,
     marginBottom: 10,
     borderRadius: 10,
   },
