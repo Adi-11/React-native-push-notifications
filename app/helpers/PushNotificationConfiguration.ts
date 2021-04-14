@@ -1,3 +1,4 @@
+import {FIREBASE_SERVER_KEY} from '@env';
 import PushNotification from 'react-native-push-notification';
 PushNotification.configure({
   onRegister: function (token) {
@@ -70,8 +71,7 @@ export const ScheduledLocalNotificationInit = () => {
 };
 
 export const SendRemoteNotifcation = async (data: any): Promise<void> => {
-  const FIREBASE_KEY =
-    'AAAAQm_DDuI:APA91bEKlPbM3qa_QrVO7_s-QbW66ObXp7_amj0XN3caEirR2yHfifml2CpQEruzVB9OwzYAJ6GSr-Gb-Jff0r_nFUzgxMLxbiUTaMN8dLBDxYJ5CWuE7XBR3rRFrs00FVbdJGD9E82K';
+  const FIREBASE_KEY = FIREBASE_SERVER_KEY;
   const message = {
     registration_ids: [data.token],
     data: data.data,

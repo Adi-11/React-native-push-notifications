@@ -20,6 +20,7 @@
     "global": "^4.4.0",
     "react": "17.0.1",
     "react-native": "0.64.0",
+    "react-native-dotenv": "^2.5.5",
     "react-native-firebase": "^5.6.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-push-notification": "^7.2.3",
