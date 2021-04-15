@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '90%',
     backgroundColor: '#bac2cf',
-    margin: SPACING,
+    marginBottom: SPACING,
   },
   mainContentViewZERO: {
     flex: 1,

@@ -25,6 +25,7 @@ export const TypeOneNotificationComponent: React.FC<TypeOneNotificationComponent
           height: IMAGE_SIZE,
           borderRadius: 20,
           marginRight: SPACING / 2,
+          justifyContent: 'center',
         }}
         source={{
           uri: imageUrl,

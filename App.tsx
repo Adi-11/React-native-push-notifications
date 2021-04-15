@@ -63,21 +63,6 @@ class App extends Component<any, AppState, any> {
   }
 
   createNotificationListioner = async () => {
-    // /**
-    //  * @working
-    //  */
-    // const channel = new firebase.notifications.Android.Channel(
-    //   'fcm_FirebaseNotifiction_default_channel',
-    //   'Demo app name',
-    //   firebase.notifications.Android.Importance.High,
-    // )
-    //   .setDescription('Demo app description')
-    //   .setSound('default');
-    // firebase
-    //   .notifications()
-    //   .android.createChannel(channel)
-    //   .then(() => console.log('channle created'));
-
     /**
      * @working
      */
