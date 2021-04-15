@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import NotificationScreen from './app/screens/NotifyScreen';
 import {checkPermisson} from './app/helpers/FireBaseConfiguration';
-import firebase from 'react-native-firebase';
 import messaging from '@react-native-firebase/messaging';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -64,20 +63,20 @@ class App extends Component<any, AppState, any> {
   }
 
   createNotificationListioner = async () => {
-    /**
-     * @working
-     */
-    const channel = new firebase.notifications.Android.Channel(
-      'fcm_FirebaseNotifiction_default_channel',
-      'Demo app name',
-      firebase.notifications.Android.Importance.High,
-    )
-      .setDescription('Demo app description')
-      .setSound('default');
-    firebase
-      .notifications()
-      .android.createChannel(channel)
-      .then(() => console.log('channle created'));
+    // /**
+    //  * @working
+    //  */
+    // const channel = new firebase.notifications.Android.Channel(
+    //   'fcm_FirebaseNotifiction_default_channel',
+    //   'Demo app name',
+    //   firebase.notifications.Android.Importance.High,
+    // )
+    //   .setDescription('Demo app description')
+    //   .setSound('default');
+    // firebase
+    //   .notifications()
+    //   .android.createChannel(channel)
+    //   .then(() => console.log('channle created'));
 
     /**
      * @working
