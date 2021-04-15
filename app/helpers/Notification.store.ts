@@ -2,17 +2,13 @@ import {useEffect, useState} from 'react';
 import {BehaviorSubject, Subscription} from 'rxjs';
 
 export interface NotificationType {
-  title: string;
-  description: string;
-  imageUrl: string;
-  buttonText: string;
   key: number;
 }
 
 class NotificationHistory {
-  _notificationHistoryData: NotificationType[] = [];
+  _notificationHistoryData: NotificationType;
 
-  set notificationHistoryData(data: NotificationType[]) {
+  set notificationHistoryData(data: NotificationType) {
     this._notificationHistoryData = data;
   }
 
@@ -23,18 +19,19 @@ class NotificationHistory {
 
 let notificationHistory = new NotificationHistory();
 
-const notificationHistorySubject = new BehaviorSubject<NotificationType[]>(
+const notificationHistorySubject = new BehaviorSubject<NotificationType>(
   notificationHistory.notificationHistoryData,
 );
 
 export const NotificationStore = {
   updateNotificationHistory: (value: any) => {
-    let tmp = value;
-
-    notificationHistorySubject.next({...value});
+    let data = value;
+    console.log({value: value});
+    notificationHistorySubject.next({...data});
   },
 
   getNotificationHistory: () => {
+    console.log('got');
     notificationHistorySubject.getValue();
   },
   getnotificationHistoryObservable: () =>
@@ -43,7 +40,7 @@ export const NotificationStore = {
 
 // custome hook
 export const useNotificationHistoryHook = () => {
-  const [state, setState] = useState<NotificationType[] | void>(
+  const [state, setState] = useState<NotificationType | void>(
     NotificationStore.getNotificationHistory,
   );
 

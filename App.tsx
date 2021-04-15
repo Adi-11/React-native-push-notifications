@@ -4,16 +4,41 @@ import {checkPermisson} from './app/helpers/FireBaseConfiguration';
 import firebase from 'react-native-firebase';
 import messaging from '@react-native-firebase/messaging';
 import {createStackNavigator} from '@react-navigation/stack';
-import {NavigationContainer, useNavigation} from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import {navigationRef, navigate} from './app/helpers/NavigationProvider';
 import {NotificationList} from './app/screens/NotificationHistoryScreen';
-import {Linking} from 'react-native';
 import {NotificationStore} from './app/helpers/Notification.store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
+import memoizeOne from 'memoize-one';
 const Stack = createStackNavigator();
 interface AppState {
   initialRouteName: string;
 }
-// done // // TODO : 0 => no-navigation; 1 => navigation in app; 2 => url redirect; 3 => User based notification({==, ==, ==, ==})
+
+export interface NotificationType {
+  title: string;
+  description: string;
+  imageUrl: string;
+  buttonText: string;
+  navigationRoute: string;
+  type: number;
+  key: string;
+}
+
+const _storeSearches = async (dataToSave: NotificationType) => {
+  let numberArray: NotificationType[] = [];
+  try {
+    let storedNumbers = await AsyncStorage.getItem('notifyList');
+    if (storedNumbers !== null) {
+      numberArray = JSON.parse(storedNumbers); // you could do some additional checks to make sure it is an array
+    }
+    numberArray.push(dataToSave);
+    await AsyncStorage.setItem('notifyList', JSON.stringify(numberArray));
+  } catch (error) {
+    // Error saving data
+  }
+};
 class App extends Component<any, AppState, any> {
   notificationListener: any;
   notificationOpenedListener: any;
@@ -30,6 +55,7 @@ class App extends Component<any, AppState, any> {
   async componentDidMount() {
     checkPermisson();
     this.createNotificationListioner();
+    // await AsyncStorage.removeItem('notifyList');
   }
 
   componentWillUnmount() {
@@ -62,31 +88,7 @@ class App extends Component<any, AppState, any> {
           'Notification caused app to open from background state:',
           remoteMessage.notification,
         );
-        const {data, notification} = remoteMessage;
-        // console.log({data, notification});
-        var route = data.routeName;
-        if (data.type === '1') {
-          console.log('No Navigation');
-        } else if (data.type === '2') {
-          // navigate(route, {text: 'test'});
-          /**
-           * @navigation_handling
-           * ?just needed to make the proper navigation screen
-           */
-        } else if (data.type == '3') {
-          Linking.openURL('https://github.com/Adi-11');
-        } else {
-          navigate(route);
-          NotificationStore.updateNotificationHistory([
-            {
-              title: notification.title,
-              description: notification.body,
-              imageUrl: data.imageUrl,
-              buttonText: data.btnText,
-              key: Math.ceil(Math.random() * 1000),
-            },
-          ]);
-        }
+        navigate('List');
       },
     );
 
@@ -95,22 +97,26 @@ class App extends Component<any, AppState, any> {
      * ? ForeGround message listiner => event handing when the app is in foreground;
      */
     this.messageListener = messaging().onMessage(message => {
-      //process data message
       console.log('JSON.stringify:', JSON.stringify(message));
     });
 
     this.backgroundhandler = messaging().setBackgroundMessageHandler(
-      async remoteMessage => {
-        const notifyObj = {
-          data: remoteMessage.data,
-          title: remoteMessage.notification.title,
-          body: remoteMessage.notification.body,
+      memoizeOne(async remoteMessage => {
+        const {data, notification} = remoteMessage;
+        var notifyData: NotificationType = {
+          title: notification.title,
+          description: notification.body,
+          imageUrl: notification.android.smallIcon,
+          buttonText: data.btnText,
+          key: uuid.v4() as string,
+          type: Number(data.type),
+          navigationRoute: data.route,
         };
-        /**
-         * ? if events are needed to be handled when the app is in background then this method will be triggred
-         */
-        console.log({function_state: this.state});
-      },
+        await _storeSearches(notifyData);
+        NotificationStore.updateNotificationHistory({
+          key: notifyData.key,
+        });
+      }),
     );
   };
   render() {

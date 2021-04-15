@@ -1,86 +1,77 @@
-import React, {useEffect, useRef} from 'react';
-import {
-  FlatList,
-  Image,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Animated,
-  ScrollView,
-} from 'react-native';
-import {
-  NotificationType,
-  useNotificationHistoryHook,
-} from '../helpers/Notification.store';
-import {color} from '../styles/col';
-import {
-  TypeOneNotificationComponent,
-  TypeThreeNotificationComponent,
-  TypeTwoNotificationComponent,
-  TypeZeroNotificationComponent,
-} from './NotificationListComponents';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useEffect, useState} from 'react';
+import {View, ScrollView} from 'react-native';
+import {NotificationType} from '../../App';
+import {useNotificationHistoryHook} from '../helpers/Notification.store';
+import {TypeOneNotificationComponent} from './components/NotifyTypeOne';
+import {TypeThreeNotificationComponent} from './components/NotifyTypeThree';
+import {TypeTwoNotificationComponent} from './components/NotifyTypeTwo';
+import {TypeZeroNotificationComponent} from './components/NotifyTypeZero';
 
-const IMAGE_SIZE = 70;
-const SPACING = 20;
-const ANIMATION = IMAGE_SIZE + SPACING * 3;
-
-// const cards = [...Array(20).keys()].map((item: any, idx: number) => {
-//   return {
-//     key: idx,
-//     image: "require('../assets/card5.jpg')",
-//     title: 'Notifcation 1',
-//     description: 'Description Of the notification Yawlit!!!',
-//     buttonTitle: 'Get it now',
-//   };
-// });
-
-const cards: NotificationType[] = [];
-
-export const NotificationList: React.FC<any> = () => {
-  const notificationsHistory = useNotificationHistoryHook();
+interface NotificationListProps {}
+export const NotificationList: React.FC<NotificationListProps> = () => {
+  const [notifyData, setNotifyData] = useState<NotificationType[]>();
+  const notificationKey = useNotificationHistoryHook();
   useEffect(() => {
-    if (notificationsHistory && notificationsHistory[0]) {
-      console.log({notificationsHistory: notificationsHistory});
-      cards.push(notificationsHistory[0]);
-    }
-  }, [notificationsHistory]);
+    (async () => {
+      const data = await AsyncStorage.getItem('notifyList');
+      setNotifyData(JSON.parse(data));
+    })();
+  }, [notificationKey]);
   return (
     <View>
       <ScrollView
-        style={{paddingTop: 10}}
+        style={{paddingTop: 30}}
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: 'center',
           bottom: 20,
         }}>
-        <TypeZeroNotificationComponent />
-        <TypeOneNotificationComponent />
-        <TypeTwoNotificationComponent />
-        <TypeThreeNotificationComponent />
+        {notifyData &&
+          notifyData.map(
+            (data: NotificationType, index: number) =>
+              (data.type === 0 && (
+                <TypeZeroNotificationComponent
+                  key={data.key}
+                  buttonText={data.buttonText}
+                  description={data.description}
+                  imageUrl={data.imageUrl}
+                  navigationRoute={data.navigationRoute}
+                  title={data.title}
+                />
+              )) ||
+              (data.type === 1 && (
+                <TypeOneNotificationComponent
+                  key={data.key}
+                  buttonText={data.buttonText}
+                  description={data.description}
+                  imageUrl={data.imageUrl}
+                  navigationRoute={data.navigationRoute}
+                  title={data.title}
+                />
+              )) ||
+              (data.type === 2 && (
+                <TypeTwoNotificationComponent
+                  key={data.key}
+                  buttonText={data.buttonText}
+                  description={data.description}
+                  imageUrl={data.imageUrl}
+                  navigationRoute={data.navigationRoute}
+                  title={data.title}
+                />
+              )) ||
+              (data.type === 3 && (
+                <TypeThreeNotificationComponent
+                  key={data.key}
+                  buttonText={data.buttonText}
+                  description={data.description}
+                  imageUrl={data.imageUrl}
+                  navigationRoute={data.navigationRoute}
+                  title={data.title}
+                />
+              )),
+          )}
       </ScrollView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE,
-    borderRadius: 50,
-    marginRight: SPACING / 2,
-  },
-
-  local: {
-    width: 100,
-    height: 35,
-    backgroundColor: '#fc5c65',
-    marginBottom: 10,
-    borderRadius: 10,
-    alignSelf: 'flex-end',
-  },
-  txt: {
-    margin: 5,
-  },
-});

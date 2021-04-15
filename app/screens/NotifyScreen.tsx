@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
 import React, {Component} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
