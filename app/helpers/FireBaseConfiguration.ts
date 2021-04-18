@@ -16,12 +16,9 @@ const getToken = async () => {
   if (!fcmToken) {
     fcmToken = await messaging().getToken();
     if (fcmToken) {
-      // user has a device token
-      // console.log('fcmToken:', fcmToken);
       await AsyncStorage.setItem('fcmToken', fcmToken);
     }
   }
-  // console.log({fcmToken: fcmToken});
 };
 
 // For IOS only
