@@ -1,10 +1,10 @@
 <br />
 <p align="center">
   <a href="https://github.com/Adi-11/React-native-push-notifications">
-    <img src="app/assets/pic1.jpg" alt="Logo" width="100" height="100%" style="margin: 10px">
-    <img src="app/assets/pic2.jpg" alt="Logo" width="100" height="100%" style="margin: 10px">
-    <img src="app/assets/pic3.jpg" alt="Logo" width="100" height="100%" style="margin: 10px">
-    <img src="app/assets/pic4.jpg" alt="Logo" width="100" height="100%" style="margin: 10px">
+    <img src="app/assets/pic1.jpg" alt="Logo" width="200" height="100%" style="margin: 10px">
+    <img src="app/assets/pic2.jpg" alt="Logo" width="200" height="100%" style="margin: 10px">
+    <img src="app/assets/pic3.jpg" alt="Logo" width=200" height="100%" style="margin: 10px">
+    <img src="app/assets/pic4.jpg" alt="Logo" width="200" height="100%" style="margin: 10px">
   </a>
 
   <p align="center">
