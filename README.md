@@ -46,11 +46,11 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/Adi-11/React-native-push-notifications
    ```
-3. Install yarn packages
+2. Install yarn packages
 
    ```sh
    yarn install
@@ -59,11 +59,11 @@ This is an example of how to list things you need to use the software and how to
    yarn add @react-native-firebase/messaging
    ```
 
-4. Enter your Firebase Server key in `.env` (must be in root level and refer example.env)
+3. Enter your Firebase Server key in `.env` (must be in root level and refer example.env)
    ```JS
    FIREBASE_SERVER_KEY=YOUR SERVER KEY
    ```
-5. Do change google-services.json file according to the [new firebase app](https://console.firebase.google.com/?pli=1).
+4. Do change google-services.json file according to the [new firebase app](https://console.firebase.google.com/?pli=1).
 
 <!-- CONTRIBUTING -->
 
